@@ -1,0 +1,16 @@
+h4 {
+    color: #919191;
+}
+
+#header-container {
+    border-bottom: none;
+    border-color: #919191;
+}
+
+#card {
+    border: none;
+    border-left: solid;
+    border-radius: 0;
+    border-left-width: 6px;
+    vertical-align: top;
+}
