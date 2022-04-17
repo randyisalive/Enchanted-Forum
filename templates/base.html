@@ -47,8 +47,18 @@
                             <a class="nav-link disabled">Disabled</a>
                         </li>
                     </ul>
-                    <a href="/signup">Sign Up</a>
-                    <a href="/login">Login</a>
+                    <form class="d-flex">
+                        {% if session and session.get('username') %}
+                        <span>
+                            Hello, {{ session['username'] }}
+                        </span>
+                        <a href="{{ url_for('logout') }}">Log Out</a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}">Log In</a>
+                        <a href="/signup">Sign Up</a>
+                        {% endif %}
+                    </form>
+                    
                     <form class="d-flex">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
