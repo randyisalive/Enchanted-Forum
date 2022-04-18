@@ -19,13 +19,12 @@ def login():
         conn = db_connection()
         cur = conn.cursor()
         sql = """
-            SELECT id, Email, username
+            SELECT id, email, name, age, user_password
             FROM users
-            WHERE Email = '%s' AND password = '%s'
+            WHERE email = '%s' AND user_password = '%s'
         """ % (email, password)
         cur.execute(sql)
         user = cur.fetchone()
-        
         error = ''
         if user is None:
             error = 'Invalid email address or password!!'
@@ -54,10 +53,11 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
+        age = request.form['age']
         conn = db_connection()
         cur = conn.cursor()
-        cur.execute('SELECT * FROM users WHERE username = %s', (username))
-        account = cur.fetchone()
+        cur.execute('SELECT * FROM users WHERE name = %s', (username))
+        account = cur.fetchall()
         if account:
             msg = 'Account already exists!'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
@@ -68,10 +68,11 @@ def signup():
             msg = 'Please fill out the form !'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cur.execute('INSERT INTO users (username,password,Email) VALUES ( %s, %s,%s)', (username, password,email))
+            cur.execute('INSERT INTO users (name,user_password,email, age) VALUES ( %s, %s,%s, %s)', (username, password,email, age))
             conn.commit()
             msg = 'You have successfully registered!'
             flash(msg)
+            return redirect(url_for('login'))
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('signup.html', msg=msg)
