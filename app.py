@@ -96,12 +96,12 @@ def create():
             'body': body
 
         }
-        save_category(data)
+        save_data(data)
         return redirect(url_for('index'))   
     return render_template('create.html')
 
 
-def save_category(data):
+def save_data(data):
     # data is a dict
     # notice by checking the existence of 'id', we could do update and insert
     if data:
