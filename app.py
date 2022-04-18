@@ -8,12 +8,19 @@ app.secret_key = 'THISISMYSECRETKEY'
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    conn = db_connection()
+    cur = conn.cursor()
+    sql = "SELECT id, title, body, likes FROM posts ORDER BY id"
+    cur.execute(sql)
+    forum = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('index.html', forum=forum)
 
 @app.route("/login", methods=['POST','GET'])
 def login():
     if request.method == "POST":
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
         
         conn = db_connection()
@@ -21,8 +28,8 @@ def login():
         sql = """
             SELECT id, email, name, age, user_password
             FROM users
-            WHERE email = '%s' AND user_password = '%s'
-        """ % (email, password)
+            WHERE name = '%s' AND user_password = '%s'
+        """ % (username, password)
         cur.execute(sql)
         user = cur.fetchone()
         error = ''
@@ -76,4 +83,46 @@ def signup():
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('signup.html', msg=msg)
+
+@app.route('/create', methods=['POST', 'GET'])
+def create():
+    if not session :
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        data = {
+            'title': title,
+            'body': body
+
+        }
+        save_category(data)
+        return redirect(url_for('index'))   
+    return render_template('create.html')
+
+
+def save_category(data):
+    # data is a dict
+    # notice by checking the existence of 'id', we could do update and insert
+    if data:
+        title = data.get('title')
+        body = data.get('body')
+
+        sql = """
+            INSERT INTO posts (title,body) VALUES ('%s','%s')
+        """ % (title,body)
+
+        if data.get('id'):  # if there is id in the data dict, UPDATE
+            posts_id = data.get('id')
+            sql = """
+                UPDATE posts SET title = '%s' WHERE id = %d
+            """ % (title, posts_id)
+
+        db = db_connection()
+        cur = db.cursor()
+        cur.execute(sql)
+        db.commit()
+        cur.close()
+        db.close()
+
 
