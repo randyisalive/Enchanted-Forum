@@ -77,6 +77,8 @@ def signup():
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
             cur.execute('INSERT INTO users (name,user_password,email, age) VALUES ( %s, %s,%s, %s)', (username, password,email, age))
             conn.commit()
+            cur.close()
+            conn.close()
             msg = 'You have successfully registered!'
             flash(msg)
             return redirect(url_for('login'))
@@ -99,6 +101,24 @@ def create():
         save_data(data)
         return redirect(url_for('index'))   
     return render_template('create.html')
+
+
+@app.route('/signup/TermOfService')
+def tos():
+    msg = ''
+    db = db_connection()
+    cursor = db.cursor()
+    sql = "SELECT tos FROM tos"
+    cursor.execute(sql)
+    text = cursor.fetchone()
+    if text is None:
+        msg1 = 'Term of Service not yet made'
+        return msg1
+    else:
+        msg1 = 'Hello'
+        return render_template('TermOfService.html', msg1=msg1, text=text)
+    return render_template('signup.html', msg1=msg1, text=text)
+        
 
 
 def save_data(data):
