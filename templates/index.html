@@ -17,13 +17,15 @@
                         {% for id,title, body, likes, comments, users_id, username in forum %}
                         <div class="row">
 
-                            <!-- Content of the forum -->
+                            <!-- Content of the forum/thread -->
                             <div class="col">
                                 <div class="card " id="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{title}}</h5>
+                                        <h5 class="card-title">
+                                            <a href="{{ url_for('read', id=id) }}" style="color: black;">{{title}}</a>
+                                        </h5>
                                         <p class="card-text">{{body}}</p>
-                                        <a href="{{ url_for('read', id=id)}}" class="btn btn-primary">Detail</a> {% if session and session.get('id') == users_id %}
+                                        <a href="{{ url_for('read', id=id)}}" class="btn btn-primary">Detail</a> {% if session and session.get('id') == users %}
                                         <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger">Delete</a> {% endif %}
                                     </div>
                                 </div>

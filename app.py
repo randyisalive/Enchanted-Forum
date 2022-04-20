@@ -17,6 +17,13 @@ def index():
     conn.close()
     return render_template('index.html', forum=forum)
 
+@app.route('/index/forum/')
+def title():
+    conn = db_connection()
+    return render_template('forum.html')
+
+    
+
 @app.route("/login", methods=['POST','GET'])
 def login():
     if request.method == "POST":
@@ -131,7 +138,7 @@ def read(id):
     conn = db_connection()
     cur = conn.cursor()
     sql = """ 
-        SELECT p.title, p.body, usr.name, usr.email
+        SELECT p.title, p.body, usr.name
         FROM posts p
         JOIN users usr ON usr.id = p.users_id
         WHERE p.id = %s
@@ -154,6 +161,66 @@ def delete(id):
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
+
+
+
+# # # # # # #  CATEGORY SECTION # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+@app.route('/category')
+def category():
+    return render_template('category/index.html')
+
+
+@app.route('/category/introduction')
+def intro():
+    conn = db_connection()
+    cur = conn.cursor()
+    sql = "SELECT users_id, title, body, id FROM introduction"
+    cur.execute(sql)
+    intro = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('category/introduction/introduction.html', intro=intro)
+
+@app.route('/category/introduction/create', methods=['POST','GET'])
+def create_intro():
+    if not session :
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        id = session.get('id')
+        username = session.get('name')
+        conn = db_connection()
+        cur = conn.cursor()
+
+        sql = "INSERT INTO introduction (title,body,users_id) VALUES ('%s', '%s','%s') " % (title,body,id)
+
+        cur.execute(sql)
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('intro'))
+    return render_template('category/introduction/create.html')
+    
+
+
+@app.route('/category/introduction/<title>/<int:id>')
+def view_intro(title,id):
+    conn = db_connection()
+    cur = conn.cursor()
+    sql = """SELECT p.body, p.title FROM introduction p 
+        WHERE p.id = '%s' AND p.title = '%s' """ % (id,title)
+    cur.execute(sql)
+    post = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('category/introduction/view.html', post=post)
+
+
+@app.route('/category/gtc')
+def gtc():
+    return render_template('category/gtc.html')
 
         
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2022 at 10:34 AM
+-- Generation Time: Apr 20, 2022 at 05:09 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.4
 
@@ -28,15 +28,6 @@ CREATE TABLE `comments` (
   `FK_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONSHIPS FOR TABLE `comments`:
---
-
---
--- Truncate table before insert `comments`
---
-
-TRUNCATE TABLE `comments`;
 -- --------------------------------------------------------
 
 --
@@ -48,15 +39,27 @@ CREATE TABLE `images` (
   `name` varchar(21) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONSHIPS FOR TABLE `images`:
---
+-- --------------------------------------------------------
 
 --
--- Truncate table before insert `images`
+-- Table structure for table `introduction`
 --
 
-TRUNCATE TABLE `images`;
+CREATE TABLE `introduction` (
+  `title` varchar(255) NOT NULL,
+  `body` varchar(255) DEFAULT NULL,
+  `users_id` int(11) NOT NULL,
+  `id` int(16) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `introduction`
+--
+
+INSERT INTO `introduction` (`title`, `body`, `users_id`, `id`) VALUES
+('intro 1', 'intro1', 1, 1),
+('test1', 'test1', 1, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -69,34 +72,16 @@ CREATE TABLE `posts` (
   `body` varchar(1000) DEFAULT NULL,
   `likes` int(255) DEFAULT NULL,
   `comments` int(255) DEFAULT NULL,
-  `FK_image_id` int(11) DEFAULT NULL,
-  `users_id` int(11) NOT NULL,
-  `username` varchar(16) NOT NULL
+  `username` varchar(16) NOT NULL,
+  `users_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONSHIPS FOR TABLE `posts`:
---   `username`
---       `users` -> `name`
---   `users_id`
---       `users` -> `id`
---
-
---
--- Truncate table before insert `posts`
---
-
-TRUNCATE TABLE `posts`;
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`id`, `title`, `body`, `likes`, `comments`, `FK_image_id`, `users_id`, `username`) VALUES
-(1, '1', '1', NULL, NULL, NULL, 1, 'admin'),
-(10, '12', '12', NULL, NULL, NULL, 1, ''),
-(17, 'asdada', 'asdada', NULL, NULL, NULL, 1, ''),
-(18, 'adasda', 'dsadad', NULL, NULL, NULL, 1, ''),
-(19, 'asdad', 'asdasd', NULL, NULL, NULL, 1, '');
+INSERT INTO `posts` (`id`, `title`, `body`, `likes`, `comments`, `username`, `users_id`) VALUES
+(8, 'Anime & Manga\n', 'sadasda', NULL, NULL, 'admin2', 2);
 
 -- --------------------------------------------------------
 
@@ -113,20 +98,12 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONSHIPS FOR TABLE `users`:
---
-
---
--- Truncate table before insert `users`
---
-
-TRUNCATE TABLE `users`;
---
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `user_password`, `age`, `email`) VALUES
-(1, 'admin', 'admin', 20, 'admin@gmail.com');
+(1, 'admin', 'admin', 20, 'admin@gmail.com'),
+(2, 'admin2', 'admin2', 20, 'admin@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -145,12 +122,19 @@ ALTER TABLE `images`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `introduction`
+--
+ALTER TABLE `introduction`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `users_id` (`users_id`);
+
+--
 -- Indexes for table `posts`
 --
 ALTER TABLE `posts`
   ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD KEY `FK_image_id` (`FK_image_id`),
-  ADD KEY `users_id` (`users_id`);
+  ADD KEY `FK_users_id` (`users_id`) USING BTREE,
+  ADD KEY `username` (`username`);
 
 --
 -- Indexes for table `users`
@@ -176,14 +160,37 @@ ALTER TABLE `images`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `introduction`
+--
+ALTER TABLE `introduction`
+  MODIFY `id` int(16) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `introduction`
+--
+ALTER TABLE `introduction`
+  ADD CONSTRAINT `introduction_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`username`) REFERENCES `users` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
