@@ -58,7 +58,7 @@ def login():
 def logout():
     """ function to do logout """
     session.clear()  # clear all sessions
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @app.route('/signup', methods=['POST', 'GET'])

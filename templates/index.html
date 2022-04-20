@@ -19,14 +19,22 @@
 
                             <!-- Content of the forum/thread -->
                             <div class="col">
-                                <div class="card " id="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">
-                                            <a href="{{ url_for('read', id=id) }}" style="color: black;">{{title}}</a>
-                                        </h5>
-                                        <p class="card-text">{{body}}</p>
-                                        <a href="{{ url_for('read', id=id)}}" class="btn btn-primary">Detail</a> {% if session and session.get('id') == users %}
-                                        <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger">Delete</a> {% endif %}
+                                <div class="card row " id="card">
+                                    <div class="card-body col">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h5 class="card-title">
+                                                    <a href="{{ url_for('read', id=id) }}" style="color: black;">{{title}}</a>
+                                                </h5>
+                                                <p class="card-text">{{body}}</p>
+                                            </div>
+                                            <div class="col">
+                                                <small><b>Owner: </b>{{ username }}</small> {% if session and session.get('name') == username %}
+                                                <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger">Delete</a> {% endif %}
+
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
 
@@ -34,6 +42,7 @@
                             <div class="col-sm-1">
                                 <!-- TOTAL Thread -->
                                 <h4>{{likes}}</h4>
+
 
                             </div>
                         </div>
