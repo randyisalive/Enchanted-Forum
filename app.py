@@ -37,6 +37,7 @@ def login():
             error = 'Invalid email address or password!!'
         else:
             session.clear()
+            session['id'] = user[0] # Ini sebenernya nge return data session, jadi tinggal di ambil make session.get('')
             session['name'] = user[2]
             return redirect(url_for('index'))
         
@@ -98,7 +99,7 @@ def create():
         conn = db_connection()
         cur = conn.cursor()
 
-        sql = "INSERT INTO posts (title,body,users_id,username) VALUES ('%s', '%s','%s','%s') " % (title,body,id, username)
+        sql = "INSERT INTO posts (title,body,users_id, username) VALUES ('%s', '%s','%s','%s') " % (title,body,id,username)
 
         cur.execute(sql)
         conn.commit()
@@ -140,6 +141,19 @@ def read(id):
     cur.close()
     conn.close()
     return render_template('detail.html', post=post)
+
+@app.route('/index/delete/<int:id>', methods=['POST','GET'])
+def delete(id):
+    if  not session:
+        return redirect(url_for('login')) 
+    conn = db_connection()
+    cur = conn.cursor()
+    sql = 'DELETE FROM posts WHERE id = %s' % id
+    cur.execute(sql)
+    cur.close()
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
 
         
 
