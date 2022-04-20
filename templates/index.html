@@ -14,7 +14,7 @@
                             <h4 class="" style="float: right;">Topic</h4>
                             <h4 class="">Category</h4>
                         </div>
-                        {% for id,title, body, likes in forum %}
+                        {% for id,title, body, likes, comments, users_id, username in forum %}
                         <div class="row">
 
                             <!-- Content of the forum -->
@@ -23,7 +23,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title">{{title}}</h5>
                                         <p class="card-text">{{body}}</p>
-                                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                                        <a href="{{ url_for('read', id=id)}}" class="btn btn-primary">Detail</a>
                                     </div>
                                 </div>
 

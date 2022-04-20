@@ -4,13 +4,13 @@ import re
 from db import db_connection
 
 app = Flask(__name__)
-app.secret_key = 'THISISMYSECRETKEY'
+app.secret_key = '1'
 
 @app.route("/")
 def index():
     conn = db_connection()
     cur = conn.cursor()
-    sql = "SELECT id, title, body, likes FROM posts ORDER BY id"
+    sql = "SELECT id, title, body, likes, comments, users_id, username FROM posts ORDER BY id"
     cur.execute(sql)
     forum = cur.fetchall()
     cur.close()
@@ -37,7 +37,7 @@ def login():
             error = 'Invalid email address or password!!'
         else:
             session.clear()
-            session['username'] = user[2]
+            session['name'] = user[2]
             return redirect(url_for('index'))
         
         flash(error)
@@ -93,12 +93,17 @@ def create():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
-        data = {
-            'title': title,
-            'body': body
+        id = session.get('id')
+        username = session.get('name')
+        conn = db_connection()
+        cur = conn.cursor()
 
-        }
-        save_data(data)
+        sql = "INSERT INTO posts (title,body,users_id,username) VALUES ('%s', '%s','%s','%s') " % (title,body,id, username)
+
+        cur.execute(sql)
+        conn.commit()
+        cur.close()
+        conn.close()
         return redirect(url_for('index'))   
     return render_template('create.html')
 
@@ -118,6 +123,24 @@ def tos():
         msg1 = 'Hello'
         return render_template('TermOfService.html', msg1=msg1, text=text)
     return render_template('signup.html', msg1=msg1, text=text)
+
+
+@app.route('/index/<int:id>', methods=['GET'])
+def read(id):
+    conn = db_connection()
+    cur = conn.cursor()
+    sql = """ 
+        SELECT p.title, p.body, usr.name, usr.email
+        FROM posts p
+        JOIN users usr ON usr.id = p.users_id
+        WHERE p.id = %s
+        """ % id
+    cur.execute(sql)
+    post = cur.fetchone()
+    cur.close()
+    conn.close()
+    return render_template('detail.html', post=post)
+
         
 
 
