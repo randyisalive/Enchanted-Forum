@@ -6,6 +6,7 @@ from db import db_connection
 app = Flask(__name__)
 app.secret_key = '1'
 
+
 @app.route("/")
 def index():
     conn = db_connection()
@@ -17,19 +18,19 @@ def index():
     conn.close()
     return render_template('index.html', forum=forum)
 
+
 @app.route('/index/forum/')
 def title():
     conn = db_connection()
     return render_template('forum.html')
 
-    
 
-@app.route("/login", methods=['POST','GET'])
+@app.route("/login", methods=['POST', 'GET'])
 def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        
+
         conn = db_connection()
         cur = conn.cursor()
         sql = """
@@ -44,15 +45,17 @@ def login():
             error = 'Invalid email address or password!!'
         else:
             session.clear()
-            session['id'] = user[0] # Ini sebenernya nge return data session, jadi tinggal di ambil make session.get('')
+            # Ini sebenernya nge return data session, jadi tinggal di ambil make session.get('')
+            session['id'] = user[0]
             session['name'] = user[2]
             return redirect(url_for('index'))
-        
+
         flash(error)
         cur.close()
         conn.close()
-        
+
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
@@ -64,7 +67,7 @@ def logout():
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
     msg = ''
-    if request.method == 'POST'and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
@@ -83,7 +86,8 @@ def signup():
             msg = 'Please fill out the form !'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cur.execute('INSERT INTO users (name,user_password,email, age) VALUES ( %s, %s,%s, %s)', (username, password,email, age))
+            cur.execute('INSERT INTO users (name,user_password,email, age) VALUES ( %s, %s,%s, %s)',
+                        (username, password, email, age))
             conn.commit()
             cur.close()
             conn.close()
@@ -94,9 +98,10 @@ def signup():
         msg = 'Please fill out the form !'
     return render_template('signup.html', msg=msg)
 
+
 @app.route('/create', methods=['POST', 'GET'])
 def create():
-    if not session :
+    if not session:
         return redirect(url_for('login'))
     if request.method == 'POST':
         title = request.form['title']
@@ -106,13 +111,14 @@ def create():
         conn = db_connection()
         cur = conn.cursor()
 
-        sql = "INSERT INTO posts (title,body,users_id, username) VALUES ('%s', '%s','%s','%s') " % (title,body,id,username)
+        sql = "INSERT INTO posts (title,body,users_id, username) VALUES ('%s', '%s','%s','%s') " % (
+            title, body, id, username)
 
         cur.execute(sql)
         conn.commit()
         cur.close()
         conn.close()
-        return redirect(url_for('index'))   
+        return redirect(url_for('index'))
     return render_template('create.html')
 
 
@@ -149,10 +155,11 @@ def read(id):
     conn.close()
     return render_template('detail.html', post=post)
 
-@app.route('/index/delete/<int:id>', methods=['POST','GET'])
+
+@app.route('/index/delete/<int:id>', methods=['POST', 'GET'])
 def delete(id):
-    if  not session:
-        return redirect(url_for('login')) 
+    if not session:
+        return redirect(url_for('login'))
     conn = db_connection()
     cur = conn.cursor()
     sql = 'DELETE FROM posts WHERE id = %s' % id
@@ -161,7 +168,6 @@ def delete(id):
     conn.commit()
     conn.close()
     return redirect(url_for('index'))
-
 
 
 # # # # # # #  CATEGORY SECTION # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -182,9 +188,10 @@ def intro():
     conn.close()
     return render_template('category/introduction/introduction.html', intro=intro)
 
-@app.route('/category/introduction/create', methods=['POST','GET'])
+
+@app.route('/category/introduction/create', methods=['POST', 'GET'])
 def create_intro():
-    if not session :
+    if not session:
         return redirect(url_for('login'))
     if request.method == 'POST':
         title = request.form['title']
@@ -194,7 +201,8 @@ def create_intro():
         conn = db_connection()
         cur = conn.cursor()
 
-        sql = "INSERT INTO introduction (title,body,users_id) VALUES ('%s', '%s','%s') " % (title,body,id)
+        sql = "INSERT INTO introduction (title,body,users_id) VALUES ('%s', '%s','%s') " % (
+            title, body, id)
 
         cur.execute(sql)
         conn.commit()
@@ -202,15 +210,14 @@ def create_intro():
         conn.close()
         return redirect(url_for('intro'))
     return render_template('category/introduction/create.html')
-    
 
 
 @app.route('/category/introduction/<title>/<int:id>')
-def view_intro(title,id):
+def view_intro(title, id):
     conn = db_connection()
     cur = conn.cursor()
     sql = """SELECT p.body, p.title FROM introduction p 
-        WHERE p.id = '%s' AND p.title = '%s' """ % (id,title)
+        WHERE p.id = '%s' AND p.title = '%s' """ % (id, title)
     cur.execute(sql)
     post = cur.fetchall()
     cur.close()
@@ -222,8 +229,6 @@ def view_intro(title,id):
 def gtc():
     return render_template('category/gtc.html')
 
-        
-
 
 def save_data(data):
     # data is a dict
@@ -234,7 +239,7 @@ def save_data(data):
 
         sql = """
             INSERT INTO posts (title,body) VALUES ('%s','%s')
-        """ % (title,body)
+        """ % (title, body)
 
         if data.get('id'):  # if there is id in the data dict, UPDATE
             posts_id = data.get('id')
@@ -248,5 +253,3 @@ def save_data(data):
         db.commit()
         cur.close()
         db.close()
-
-
