@@ -12,9 +12,9 @@
                     <div class="row">
                         <div class="col mb-2" id="header-container">
                             <h4 class="" style="float: right;">Topic</h4>
-                            <h4 class="">Category</h4>
+                            <h4 class="">Newest Forum</h4>
                         </div>
-                        {% for id,title, body, likes, comments, users_id, username in forum %}
+                        {% for id, title, body, username, users_id in forum %}
                         <div class="row">
 
                             <!-- Content of the forum/thread -->
@@ -42,7 +42,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-sm-1"> 
+                            <div class="col-sm-1">
                                 <!-- TOTAL Thread -->
                                 <h4>{{likes}}</h4>
 

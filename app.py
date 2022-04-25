@@ -1,7 +1,9 @@
 # save this as app.py
+from turtle import pos
 from flask import Flask, redirect, render_template, request, session, url_for, flash
 import re
 from db import db_connection
+from services.funtion import *
 
 app = Flask(__name__)
 app.secret_key = '1'
@@ -9,17 +11,11 @@ app.secret_key = '1'
 
 @app.route("/")
 def index():
-    conn = db_connection()
-    cur = conn.cursor()
-    sql = "SELECT id, title, body, likes, comments, users_id, username FROM posts ORDER BY id"
-    cur.execute(sql)
-    forum = cur.fetchall()
-    cur.close()
-    conn.close()
+    forum = getAllPosts()
     return render_template('index.html', forum=forum)
 
 
-@app.route('/index/forum/')
+@app.route('/forum/')
 def title():
     conn = db_connection()
     return render_template('forum.html')
@@ -99,7 +95,7 @@ def signup():
     return render_template('signup.html', msg=msg)
 
 
-@app.route('/create', methods=['POST', 'GET'])
+@app.route('/CreateThread', methods=['POST', 'GET'])
 def create():
     if not session:
         return redirect(url_for('login'))
@@ -111,8 +107,8 @@ def create():
         conn = db_connection()
         cur = conn.cursor()
 
-        sql = "INSERT INTO posts (title,body,users_id, username) VALUES ('%s', '%s','%s','%s') " % (
-            title, body, id, username)
+        sql = "INSERT INTO posts (title,body,users_id,username) VALUES ('%s', '%s','%s','%s') " % (
+            title, body, id,username)
 
         cur.execute(sql)
         conn.commit()
@@ -139,24 +135,46 @@ def tos():
     return render_template('signup.html', msg1=msg1, text=text)
 
 
-@app.route('/index/<int:id>', methods=['GET'])
-def read(id):
+@app.route('/forum/<int:id>/', methods=['GET'])
+def read(id): # id is post_id
     conn = db_connection()
     cur = conn.cursor()
     sql = """ 
-        SELECT p.title, p.body, usr.name
+        SELECT p.title, p.body, usr.name, c.body
         FROM posts p
-        JOIN users usr ON usr.id = p.users_id
+        JOIN users usr 
+        ON usr.id = p.users_id
+        JOIN comments c 
+        ON c.FK_post_id = p.id
         WHERE p.id = %s
         """ % id
     cur.execute(sql)
     post = cur.fetchone()
     cur.close()
     conn.close()
-    return render_template('detail.html', post=post)
+    return render_template('detail.html', id=id,post=post) # dont forget to pass id lol
+
+@app.route('/forum/<int:id>/comment/', methods=['POST','GET'])
+def comment(id): # id is post_id
+    if not session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        body = request.form['body']
+        user_id = session.get('id')
+        username = session.get('name')
+        conn = db_connection()
+        cur = conn.cursor()
+        sql = "INSERT INTO comments (body,FK_post_id,FK_user_id,username) VALUES ('%s', '%s','%s','%s') " % (body,id,user_id,username)
+        cur.execute(sql)
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('read', id=id))
+    return render_template('comment.html', id=id)
 
 
-@app.route('/index/delete/<int:id>', methods=['POST', 'GET'])
+
+@app.route('/forum/delete/<int:id>', methods=['POST', 'GET'])
 def delete(id):
     if not session:
         return redirect(url_for('login'))

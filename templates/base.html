@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
     <script src="https://kit.fontawesome.com/59b3d92b80.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
     {% block navbar %}
     <div>
@@ -32,14 +33,14 @@
                             <a class="nav-link active" aria-current="page" href="/">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('category') }}">Category</a>
+                            <a class="nav-link" href="/category">Category</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Community
                     </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="/create">Post Forum</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('create') }}">Post Forum</a></li>
                                 <li><a class="dropdown-item" href="/index/forum">All Topic</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
@@ -86,7 +87,8 @@
         </nav>
         <!-- NAVBAR -->
     </div>
-    {% endblock %} <div class="container"> {% block body %} {% endblock %} </div>
+    {% endblock %}
+    <div class="container"> {% block body %} {% endblock %} </div>
 
 
 </body>
