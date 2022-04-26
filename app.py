@@ -257,27 +257,51 @@ def view_intro(title, id):
 def gtc():
     return render_template('category/gtc.html')
 
+########################### EDIT PROFILE ####################################################################################
 
-def save_data(data):
-    # data is a dict
-    # notice by checking the existence of 'id', we could do update and insert
-    if data:
-        title = data.get('title')
-        body = data.get('body')
 
-        sql = """
-            INSERT INTO posts (title,body) VALUES ('%s','%s')
-        """ % (title, body)
+@app.route('/profile')
+def profile():
+    id = session.get('id')
+    db = db_connection()
+    if not session.get('id'):
+        return print('no id lol')
+    cur = db.cursor()
+    sql = "SELECT `id`, `name`, `user_password`, `age`, `email` FROM `users` WHERE id =  %d " % (
+        int(id))
+    cur.execute(sql)
+    profile = cur.fetchone()
+    cur.close()
+    db.close()
+    return render_template('profile/profile_view.html', profile=profile, id=id)
 
-        if data.get('id'):  # if there is id in the data dict, UPDATE
-            posts_id = data.get('id')
-            sql = """
-                UPDATE posts SET title = '%s' WHERE id = %d
-            """ % (title, posts_id)
 
+@app.route('/profile/edit', methods=['POST', 'GET'])
+def profile_edit():
+    id = session.get('id')
+    db = db_connection()
+    if not session.get('id'):
+        return print('no id lol')
+    cur = db.cursor()
+    sql = "SELECT `id`, `name`, `user_password`, `age`, `email` FROM `users` WHERE id =  %d " % (
+        int(id))
+    cur.execute(sql)
+    profile = cur.fetchone()
+    cur.close()
+    db.close()
+    if request.method == 'POST':
+        id = session.get('id')
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        age = request.form['age']
+        params = (username, password, age, email, id)
         db = db_connection()
         cur = db.cursor()
+        sql = "UPDATE users SET name = '%s', user_password = '%s', age = '%s', email = '%s' WHERE id = %s " % params
         cur.execute(sql)
         db.commit()
         cur.close()
         db.close()
+        return redirect(url_for('profile'))
+    return render_template('profile/edit.html', profile=profile)

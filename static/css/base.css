@@ -49,10 +49,5 @@ a:hover {
 }
 body{
     overflow-x: hidden;
-    background: url('../img/bg_overlay.jpg');
-}
-.detailhtml{
-    background-color: white;
-    border-radius: 5px;
-    padding: 2rem 2rem 2rem 2rem;
+    background: url('../img/bg_overlay.png');
 }
