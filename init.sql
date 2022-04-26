@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2022 at 05:09 PM
+-- Generation Time: Apr 25, 2022 at 07:32 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.4
 
@@ -12,7 +12,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
--- Database: `flask_forum`
+-- Database: `tugas_forum_pdt`
 --
 
 -- --------------------------------------------------------
@@ -23,10 +23,20 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `comments` (
   `id` int(10) NOT NULL,
-  `body` varchar(500) DEFAULT NULL,
+  `body` varchar(1000) DEFAULT NULL,
   `FK_post_id` int(11) DEFAULT NULL,
-  `FK_user_id` int(11) DEFAULT NULL
+  `FK_user_id` int(11) DEFAULT NULL,
+  `username` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`id`, `body`, `FK_post_id`, `FK_user_id`, `username`) VALUES
+(1, 'Heyyo pause...', 1, 1, 'admin'),
+(2, 'Hell nah man??', 1, 1, 'admin'),
+(3, 'yoo', 1, 1, 'admin');
 
 -- --------------------------------------------------------
 
@@ -42,27 +52,6 @@ CREATE TABLE `images` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `introduction`
---
-
-CREATE TABLE `introduction` (
-  `title` varchar(255) NOT NULL,
-  `body` varchar(255) DEFAULT NULL,
-  `users_id` int(11) NOT NULL,
-  `id` int(16) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `introduction`
---
-
-INSERT INTO `introduction` (`title`, `body`, `users_id`, `id`) VALUES
-('intro 1', 'intro1', 1, 1),
-('test1', 'test1', 1, 2);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `posts`
 --
 
@@ -70,18 +59,52 @@ CREATE TABLE `posts` (
   `id` int(11) NOT NULL,
   `title` varchar(30) DEFAULT NULL,
   `body` varchar(1000) DEFAULT NULL,
-  `likes` int(255) DEFAULT NULL,
-  `comments` int(255) DEFAULT NULL,
-  `username` varchar(16) NOT NULL,
-  `users_id` int(11) DEFAULT NULL
+  `users_id` int(11) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`id`, `title`, `body`, `likes`, `comments`, `username`, `users_id`) VALUES
-(8, 'Anime & Manga\n', 'sadasda', NULL, NULL, 'admin2', 2);
+INSERT INTO `posts` (`id`, `title`, `body`, `users_id`, `username`) VALUES
+(1, 'Anime Sucks!!!!', 'Hey, can you please explain to me why??\r\n', 2, 'admin2'),
+(3, 'Anime Sucks', 'Hey', 1, 'admin'),
+(4, 'About Fate/Stay Night series..', '', 1, 'admin');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `put_posts`
+--
+
+CREATE TABLE `put_posts` (
+  `id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `put_posts`
+--
+
+INSERT INTO `put_posts` (`id`, `post_id`, `users_id`) VALUES
+(0, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reply`
+--
+
+CREATE TABLE `reply` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `comment_id` int(11) NOT NULL,
+  `posts_id` int(11) NOT NULL,
+  `body` text NOT NULL,
+  `username` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -91,7 +114,7 @@ INSERT INTO `posts` (`id`, `title`, `body`, `likes`, `comments`, `username`, `us
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `name` varchar(16) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `user_password` varchar(1000) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   `email` varchar(30) DEFAULT NULL
@@ -113,7 +136,11 @@ INSERT INTO `users` (`id`, `name`, `user_password`, `age`, `email`) VALUES
 -- Indexes for table `comments`
 --
 ALTER TABLE `comments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_post_id` (`FK_post_id`),
+  ADD KEY `FK_user_id` (`FK_user_id`),
+  ADD KEY `body` (`body`(768)),
+  ADD KEY `username` (`username`);
 
 --
 -- Indexes for table `images`
@@ -122,18 +149,27 @@ ALTER TABLE `images`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `introduction`
---
-ALTER TABLE `introduction`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `users_id` (`users_id`);
-
---
 -- Indexes for table `posts`
 --
 ALTER TABLE `posts`
   ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD KEY `FK_users_id` (`users_id`) USING BTREE,
+  ADD KEY `FK_users_id` (`users_id`) USING BTREE;
+
+--
+-- Indexes for table `put_posts`
+--
+ALTER TABLE `put_posts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_id` (`post_id`),
+  ADD KEY `users_id` (`users_id`);
+
+--
+-- Indexes for table `reply`
+--
+ALTER TABLE `reply`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `posts_id` (`posts_id`),
   ADD KEY `username` (`username`);
 
 --
@@ -141,7 +177,7 @@ ALTER TABLE `posts`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD UNIQUE KEY `username` (`name`);
+  ADD KEY `name` (`name`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -151,7 +187,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `images`
@@ -160,16 +196,16 @@ ALTER TABLE `images`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `introduction`
---
-ALTER TABLE `introduction`
-  MODIFY `id` int(16) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `reply`
+--
+ALTER TABLE `reply`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -182,15 +218,33 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `introduction`
+-- Constraints for table `comments`
 --
-ALTER TABLE `introduction`
-  ADD CONSTRAINT `introduction_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`FK_post_id`) REFERENCES `posts` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`FK_user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `comments_ibfk_3` FOREIGN KEY (`username`) REFERENCES `users` (`name`);
 
 --
 -- Constraints for table `posts`
 --
 ALTER TABLE `posts`
   ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`username`) REFERENCES `users` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`username`) REFERENCES `users` (`name`);
+
+--
+-- Constraints for table `put_posts`
+--
+ALTER TABLE `put_posts`
+  ADD CONSTRAINT `put_posts_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `put_posts_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `reply`
+--
+ALTER TABLE `reply`
+  ADD CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `reply_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `reply_ibfk_3` FOREIGN KEY (`posts_id`) REFERENCES `posts` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `reply_ibfk_4` FOREIGN KEY (`username`) REFERENCES `users` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;

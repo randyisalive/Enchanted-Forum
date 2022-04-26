@@ -6,15 +6,15 @@
 <article>
     <div class="container">
         <div class="row">
-            <div class="col pt-4">
+            <div class="col md-8 sm-12 lg-4">
                 <!-- Left content -->
                 <div class="container p-0" id="container-forum">
                     <div class="row">
                         <div class="col mb-2" id="header-container">
-                            <h4 class="" style="float: right;">Topic</h4>
-                            <h4 class="">Category</h4>
+                            <h4 class="topic" style="float: right;">Topic</h4>
+                            <h4 class="newest-forum">Newest Forum</h4>
                         </div>
-                        {% for id,title, body, likes, comments, users_id, username in forum %}
+                        {% for id, title, body, username, users_id in forum %}
                         <div class="row">
 
                             <!-- Content of the forum/thread -->
@@ -33,7 +33,7 @@
                                                 <a href="#" class="button-delete plain-btn"><u>Delete</u></a>
                                                 <a href="#" class="button-edit plain-btn"><u>Edit</u></a>
                                                 <br><br><br>
-                                                <footer class="blockquote-footer">#likes likes</footer>
+                                                <footer class="blockquote-footer"></footer>
                                                 {% endif %}
                                             </div>
 
@@ -42,7 +42,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-sm-1"> 
+                            <div class="col-sm-1">
                                 <!-- TOTAL Thread -->
                                 <h4>{{likes}}</h4>
 
@@ -54,9 +54,9 @@
                 </div>
             </div>
             <!-- Right Content -->
-            <div class="col pt-4">
+            <div class="col md-4 sm-12 lg-4">
                 <div class="container p-0 mb-2 ">
-                    <h4>Latest</h4>
+                    <h4 class="latest">Latest</h4>
                     <div class="row">
                         <div class="col">
                             <div class="card" id="card-css">

@@ -43,3 +43,29 @@ a:hover {
     color: white;
     text-decoration: underline;
 }
+
+.searchbar{
+    width: 50vw;
+}
+body{
+    overflow-x: hidden;
+}
+.bg {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    position: absolute;
+    overflow: hidden;
+  }
+  
+.bg::after {
+    content: "";
+    background: url(../img/bg_overlay.jpg);
+    opacity: 0.1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;  
+  }
