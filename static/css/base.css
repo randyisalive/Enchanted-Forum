@@ -43,3 +43,7 @@ a:hover {
     color: white;
     text-decoration: underline;
 }
+
+.searchbar{
+    width: 50vw;
+}
