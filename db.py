@@ -5,7 +5,7 @@ def db_connection():
     conn = pymysql.connect(
         host='localhost',
         port=3306,
-        database='flask_forum',
+        database='Tugas_forum_pdt',
         user='root',
         password=''
     )
