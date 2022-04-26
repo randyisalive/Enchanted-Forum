@@ -1,0 +1,9 @@
+.detailhtml{
+    background-color: white;
+    border-radius: 5px;
+    padding: 2rem 2rem 2rem 2rem;
+}
+.comment-author{
+    color: gray;
+    font-size: 0.8rem;
+}

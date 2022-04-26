@@ -108,7 +108,7 @@ def create():
         cur = conn.cursor()
 
         sql = "INSERT INTO posts (title,body,users_id,username) VALUES ('%s', '%s','%s','%s') " % (
-            title, body, id,username)
+            title, body, id, username)
 
         cur.execute(sql)
         conn.commit()
@@ -136,26 +136,36 @@ def tos():
 
 
 @app.route('/forum/<int:id>/', methods=['GET'])
-def read(id): # id is post_id
+def read(id):  # id is post_id
     conn = db_connection()
     cur = conn.cursor()
+    cur1 = conn.cursor()
     sql = """ 
-        SELECT p.title, p.body, usr.name, c.body
+        SELECT p.title, p.body, usr.name
         FROM posts p
         JOIN users usr 
         ON usr.id = p.users_id
-        JOIN comments c 
-        ON c.FK_post_id = p.id
+        WHERE p.id = %s
+        """ % id
+    comment = """ 
+        SELECT c.username, c.body
+        FROM comments c
+        LEFT JOIN posts p
+        ON p.id = c.FK_post_id
         WHERE p.id = %s
         """ % id
     cur.execute(sql)
     post = cur.fetchone()
+    cur1.execute(comment)
+    comments = cur1.fetchall() or {}
     cur.close()
     conn.close()
-    return render_template('detail.html', id=id,post=post) # dont forget to pass id lol
+    # dont forget to pass id lol
+    return render_template('detail.html', id=id, post=post, comments=comments)
 
-@app.route('/forum/<int:id>/comment/', methods=['POST','GET'])
-def comment(id): # id is post_id
+
+@app.route('/forum/<int:id>/comment/', methods=['POST', 'GET'])
+def comment(id):  # id is post_id
     if not session:
         return redirect(url_for('login'))
     if request.method == 'POST':
@@ -164,14 +174,14 @@ def comment(id): # id is post_id
         username = session.get('name')
         conn = db_connection()
         cur = conn.cursor()
-        sql = "INSERT INTO comments (body,FK_post_id,FK_user_id,username) VALUES ('%s', '%s','%s','%s') " % (body,id,user_id,username)
+        sql = "INSERT INTO comments (body,FK_post_id,FK_user_id,username) VALUES ('%s', '%s','%s','%s') " % (
+            body, id, user_id, username)
         cur.execute(sql)
         conn.commit()
         cur.close()
         conn.close()
         return redirect(url_for('read', id=id))
     return render_template('comment.html', id=id)
-
 
 
 @app.route('/forum/delete/<int:id>', methods=['POST', 'GET'])

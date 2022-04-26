@@ -1,25 +1,33 @@
 {% extends 'base.html' %} {% block head %}
-<title>{{ post[0] }}</title> {% endblock %} {% block body %}
+<title>{{ post[0] }}</title>
+{% endblock %} {% block body %}
 
 <div class="container mt-5">
-    <div class="row">
-        <h2>
-            {{ post[0] }}
-        </h2>
-        <h3>{{ post[1] }}</h3>
-        <p>Created by: {{ post[2] }}</p>
-        <a href="{{ url_for('comment', id=id,username=post[2]) }}" class="comment-button"><i class="fa-solpost fa-comment-dots"></i>&nbsp;Comment</a>
-        <div class="container">
-            <h5>{{ post[3] }}
-                <h6>-{{ post[2] }}</h6>
-            </h5>
+    <div class="container detailhtml">
+        <div class="row">
+            <h2>
+                {{ post[0] }}
+            </h2>
+            <h3>{{ post[1] }}</h3>
+            <p>Created by: {{ post[2] }}</p>
+        </div>
+    <hr/>
+    <a href="{{ url_for('comment', id=id,username=post) }}" class="comment-button"><i class="lni lni-comments"></i>&nbsp;Comment</a>
+    </div> 
+    <div class="container mt-4 detailhtml">
+        {% if comments %}
+        {% for comment in comments%}
+        <div class="container-sm">
+            <h6>{{ comment[1] }}</h5>
+            <span class="comment-author">by {{ comment[0] }}<span>
 
         </div>
-
-
-
+        <hr>
+        {% endfor %}
+        {% else %}
+        <h4>No comments found..</h4>
+        {% endif %}
     </div>
-
 </div>
 
 {% endblock %}

@@ -49,23 +49,10 @@ a:hover {
 }
 body{
     overflow-x: hidden;
+    background: url('../img/bg_overlay.jpg');
 }
-.bg {
-    width: 100vw;
-    height: 100vh;
-    display: block;
-    position: absolute;
-    overflow: hidden;
-  }
-  
-  .bg::after {
-    content: "";
-    background: url(../img/bg_overlay.jpg);
-    opacity: 0.1;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: -1;  
-  }
+.detailhtml{
+    background-color: white;
+    border-radius: 5px;
+    padding: 2rem 2rem 2rem 2rem;
+}
